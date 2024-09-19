@@ -1,0 +1,45 @@
+.svg-container {
+    display: flex;
+    align-items: end;
+    justify-content: end;
+    width: 100%;
+    overflow: hidden;
+    height: 80vh;
+    padding-left: 0;
+  }
+  
+  svg {
+    /* margin-left: -50%; */
+    transform: rotate(90deg) scale(5) /*  translateY(42%) */;
+    height: 100%;
+  
+  }
+  
+  .login-container{
+    
+    background-size: cover;
+    background-position: center;
+  }
+  
+  .banner .wave {
+    position: absolute;
+    width: 100%;
+    left: 0;
+    height: 100vh; 
+  }
+  .login-head{
+    font-size: 40px;
+    font-weight: 700;
+  }
+  .input-box{
+    width: 100%;
+    padding: 10px;
+    border-radius: 10px;
+    border: 0;
+    background-color: rgba(173, 231, 246, 0.318);
+    outline-color: rgb(0, 110, 255);
+  }
+  .reset-btn{
+  
+    background-color: rgba(182, 224, 226, 0.282);
+  }
