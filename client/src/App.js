@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate , useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchUser } from './redux/features/user/userSlice';
@@ -22,7 +22,6 @@ import ViewReport from './pages/Report/ViewReport';
 import ViewCalibration from './pages/CalibartionPage/ViewCalibration';
 import Tank from './pages/Tank/Tank';
 import DownloadData from './pages/Download/DownloadData';
-import ManageUser from './pages/ManageUsers/ManageUser';
 import AddParameter from './pages/ParameterExceed/AddParameter';
 import ViewParameter from './pages/ParameterExceed/ViewParameter';
 import Notification from './pages/Notification/Notification';
@@ -32,69 +31,69 @@ import UsersLog from './pages/ManageUsers/Userlog';
 import Account from './pages/Account/Account';
 import SupportAnalyser from './pages/SupportAnalyser/SupportAnalyser';
 import Edit from './pages/ManageUsers/Edit';
-import { CalibrationProvider } from './pages/CalibartionPage/CalibrationContext';
 import EditCalibration from './pages/CalibartionPage/EditCalibration';
 import ReportCheck from './pages/Report/ReportCheck';
 import EditReport from './pages/Report/EditReport';
 import CalibrationExceeded from './pages/CalibartionPage/CalibrationExceeded';
-import { UserProvider } from './pages/ManageUsers/UserContext';
 import Viewnotification from './pages/Notification/Viewnotification';
-import { NotificationProvider } from './pages/Notification/NotificationContext';
 import ViewReportUser from './pages/Report/ViewReportUser';
 import EditParameter from './pages/ParameterExceed/EditParameter';
-import PublicLayout from './pages/PublicLayout/PublicLayout';
 import PrivateLayout from './pages/PrivateLayout/PrivateLayout';
-import Hedaer from './pages/Header/Hedaer';
 import Layout from './pages/Layout/Layout';
 import Transcation from './pages/Transactions/Transcation';
 
 function App() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { userData, loading, userType } = useSelector((state) => state.user);
 
-  useEffect(() => {
-    dispatch(fetchUser())
-      .unwrap()
-      .then((responseData) => {
-        if (responseData.status === 401 || !responseData.validUserOne) {
-          console.log("User not Valid");
-          navigate('/');
-        } else {
-          console.log("User verified");
-        }
-      })
-      .catch((error) => {
-        console.error("Error Validating User:", error);
-        navigate('/');
-      });
-  }, [dispatch, navigate]);
+  //public routes
+  const publicRoutes = ['/download-data'];
 
+  useEffect(() => {
+    // Only perform user validation for routes that are not in the publicRoutes array
+    if (!publicRoutes.includes(location.pathname)) {
+      dispatch(fetchUser())
+        .unwrap()
+        .then((responseData) => {
+          if (responseData.status === 401 || !responseData.validUserOne) {
+            console.log("User not Valid");
+            navigate('/');
+          } else {
+            console.log("User verify");
+          }
+        })
+        .catch((error) => {
+          console.error("Error Validating User:", error);
+          navigate('/');
+        });
+    }
+  }, [dispatch, navigate, location.pathname]);
   if (loading) {
     return <div>Loading...</div>;
   }
 
   return (
-    <div className="App">
+    <div className="">
     
-      <CalibrationProvider>
-        <UserProvider>
-          <NotificationProvider>
+      
          
             <Routes>
              
-                <Route path="/" element={<Log />} />
-                <Route path="/reset-password" element={<Reset />} />
+                <Route path="/login" element={<Log/>} />
+                <Route path="/reset-password/:id/:token" element={<Reset />} />
                 <Route path="/reset" element={<ResetEmail />} />
                 <Route path='/download-data' element={<Download/>}></Route>
-             
+                <Route path="/" element={<Log />} />
+
 
               {/* Admin Routes */}
              
               {userType === "admin" && (
                            
 
-                <Route path='/' element={<PrivateLayout />}>
+                <>
                   
 
                   <Route path="/dashboard" element={<Dashboard />} />
@@ -130,7 +129,9 @@ function App() {
                   <Route path="/edit/:userId" element={<Edit />} />
                   <Route path="/view-notification" element={<Viewnotification />} />
                   <Route path="/edit-parameter/:userName" element={<EditParameter />} />
-                </Route>
+
+
+                </>
               )}
 
               {/* User Routes */}
@@ -156,9 +157,7 @@ function App() {
                 </Route>
               )}
             </Routes>
-          </NotificationProvider>
-        </UserProvider>
-      </CalibrationProvider>
+         
     </div>
   );
 }
